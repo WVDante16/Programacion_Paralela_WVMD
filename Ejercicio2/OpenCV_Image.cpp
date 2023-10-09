@@ -33,6 +33,14 @@ int main() {
     //Esperar a presionar una tecla para continuar el programa
     cv::waitKey(0);
 
+    //Imagen en escala de grises
+    cv::Mat grayImage;
+    cv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
+    cv::imshow("Grayscale image", grayImage);
+    
+    //Esperar a presionar una tecla para continuar el programa
+    cv::waitKey(0);
+
     //Separar la imagen en tres canales
     cv::Mat rgb[3];
     cv::split(image, rgb);
