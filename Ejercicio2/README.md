@@ -11,7 +11,7 @@ Matriz:
 Conjunto bidimensional de numeros o simbolos distribuidos de forma rectangular, en lineas verticales y horizontales, de manera que sus elementos se organizan en filas y columnas.
 
 Codigo:
-//Codigo para mostrar una imagen desde C++ usando OpenCV ademas de modificaciones con color maps
+Codigo para mostrar una imagen desde C++ usando OpenCV ademas de modificaciones con color maps
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -43,6 +43,14 @@ int main() {
     //Mostrar la imagen
     cv::imshow("Image", image);
 
+    //Esperar a presionar una tecla para continuar el programa
+    cv::waitKey(0);
+
+    //Imagen en escala de grises
+    cv::Mat grayImage;
+    cv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);
+    cv::imshow("Grayscale image", grayImage);
+    
     //Esperar a presionar una tecla para continuar el programa
     cv::waitKey(0);
 
