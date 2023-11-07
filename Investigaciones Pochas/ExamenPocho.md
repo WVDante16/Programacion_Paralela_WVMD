@@ -1,5 +1,16 @@
 Programacion de paralelismo - Examen parcial 2
 
+En las columnas por orden de izquierda a derecha especifican:
+-El tipo de actividad que se esta realizando, cada tipo tiene divididos sus procesos y funciones que realizan.
+-El porcentaje de tiempo que tomo hacer cada funcion segun el dispositivo.
+-El tiempo que tomo hacer la funcion.
+-Las veces o llamadas de la funcion.
+-El promedio de tiempo que tomo realizar las funciones.
+-El minimo de tiempo que necesito para realizar la funcion.
+-El maximo de tiempo que necesito para realizar la funcion.
+-Nombre de la funcion que se realizo.
+
+Todo esto ordenado de arriba a abajo tomando en cuenta la cantidad de tiempo que llevo realizar la accion dividido para cada tipo de actividad (GPU activities y API calls).
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 ==1011== NVPROF is profiling process 1011, command: ./simpleMathAoS
 ==1011== Warning: Unified Memory Profiling is not supported on the current configuration because a pair of devices without peer-to-peer support is detected on this multi-GPU setup. When peer mappings are not available, system falls back to using zero-copy memory. It can cause kernels, which access unified memory, to run slower. More details can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-managed-memory
@@ -27,21 +38,31 @@ Programacion de paralelismo - Examen parcial 2
                     0.00%     400ns         1     400ns     400ns     400ns  cuDeviceTotalMem
                     0.00%     200ns         1     200ns     200ns     200ns  cuDeviceGetUuid
 
-En las columnas por orden de izquierda a derecha especifican:
--El tipo de actividad que se esta realizando, cada tipo tiene divididos sus procesos y funciones que realizan.
--El porcentaje de tiempo que tomo hacer cada funcion segun el dispositivo.
--El tiempo que tomo hacer la funcion.
--Las veces o llamadas de la funcion.
--El promedio de tiempo que tomo realizar las funciones.
--El minimo de tiempo que necesito para realizar la funcion.
--El maximo de tiempo que necesito para realizar la funcion.
--Nombre de la funcion que se realizo.
-
-Todo esto ordenado de arriba a abajo tomando en cuenta la cantidad de tiempo que llevo realizar la accion dividido para cada tipo de actividad (GPU activities y API calls).
-  
 En este codigo se uso un array de estructuras (AoS: Array of Structure) para almacenar datos en el dispositivo y ver su desempeño por medio de la GPU.
 Lo mas destacable es el uso del cudaMalloc que fue llamado solo 2 veces y necesito 566.38ms para ser completado, esta consiste en asignar bytes de tamaño de memoria lineal en el dispositivo y regresa un puntero a la memoria asignada, en esta se puede asignar cualquier valor y no se borra.
 Y la funcion cuDeviceGetAttribute que aunque fue llamada 101 veces solo demoro 14.6us representando menos del 1% del tiempo de las API calls, esta funcion regresa informacion del dispositivo.
+
+-[CUDA memcpy DtoH]: Hace copias de la memoria desde el device hacia el host - represento el 80.19% del tiempo de ejecucion con 23.304ms - llamado 2 veces.
+-[CUDA memcpy HtoD]: Hace copias de la memoria desde el host hacia el device - represento el 18.05% del tiempo de ejecucion con 5.2457ms - llamado 1 vez.
+-warmup(innerStruct*, innerStruct*, int): Funcion global que guarda valores temporales X y Y para una matriz - represento el 0.88% del tiempo de ejecucion con 256.10us - llamado 1 vez.
+-testInnerStruct(innerStruct*, innerStruct*, int): Funcion global ingresa valores a una matriz - represento el 0.88% del tiempo de ejecucion con 255.85us - llamado 1 vez.
+
+-cudaMalloc: Asigna bytes de tamaño de memoria lineal en el dispositivo y devuelve en *devPtr un puntero a la memoria asignada - represento el 88.83% del tiempo de ejecucion con 566.38ms - llamado 2 veces.
+-cudaDeviceReset: Destruye y limpia todos los recursos asociados con el dispositivo actual en el proceso actual - represento el 5.61% del tiempo de ejecucion con 35.742ms - llamado 1 vez.
+-cudaMemcpy: Copia datos entre el host y el dispositivo - represento el 4.90% del tiempo de ejecucion con 31.267ms - llamado 3 veces.
+-cuDeviceGetPCIBusId: Devuelve la configuracion de la memoria compartida para el dispositivo actual - represento el 0.34% del tiempo de ejecucion con 2.1562ms - llamado 1 vez.
+-cudaFree: Libera memoria en el dispositivo - represento el 0.19% del tiempo de ejecucion con 1.2200ms - llamado 2 veces.
+-cudaDeviceSynchronize: Espera a que finaliza el dispositivo - represento el 0.11% del tiempo de ejecucion con 669.90us - llamado 2 veces.
+-cudaLaunchKernel: Inicia una funcion del dispositivo - represento el 0.03% del tiempo de ejecucion con 161.60us - llamado 2 veces.
+-cuDeviceGetAttribute: Regresa informacion del dispositivo - represento el 0.00% del tiempo de ejecucion con 14.600us - llamado 101 veces.
+-cudaSetDevice: Configura el dispositivo que se utilizara para las ejecuciones de la GPU - represento el 0.00% del tiempo de ejecucion con 5.8000us - llamado 1 vez.
+-cudaGetLastError: Devuelve el ultimo error de una llamada en tiempo de ejecucion - represento el 0.00% del tiempo de ejecucion con 6.1000us - llamado 1 vez.
+-cudaGetDeviceProperties: Devuelve informacion sobre el diuspositivo informatico - represento el 0.00% del tiempo de ejecucion con 4.7000us - llamado 1 vez.
+-cuDeviceGetCount: Devuelve el numero de dispositivos con capacidad informatica - represento el 0.00% del tiempo de ejecucion con 1.4000us - llamado 3 veces.
+-cuDeviceGet: Devuelve un identificador a un dispositivo informatico - represento el 0.00% del tiempo de ejecucion con 800ns - llamado 2 veces.
+-cuDeviceGetName: Devuelve una cadena de identificacion para el dispositivo - represento el 0.00% del tiempo de ejecucion con 600ns - llamado 1 vez.
+-cuDeviceTotalMem: Devuelve la cantidad total de memoria del dispositivo - represento el 0.00% del tiempo de ejecucion con 400ns - llamado 1 vez.
+-cuDeviceGetUuid: Devuelve un UUID para el dispositivo - represento el 0.00% del tiempo de ejecucion con 200ns - llamado 1 vez.
 ----------------------------------------------------------------------------------------------------------------------------------------------
 ==1027== NVPROF is profiling process 1027, command: ./simpleMathSoA
 ==1027== Warning: Unified Memory Profiling is not supported on the current configuration because a pair of devices without peer-to-peer support is detected on this multi-GPU setup. When peer mappings are not available, system falls back to using zero-copy memory. It can cause kernels, which access unified memory, to run slower. More details can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-managed-memory
@@ -71,6 +92,28 @@ Y la funcion cuDeviceGetAttribute que aunque fue llamada 101 veces solo demoro 1
 
 En este codigo se uso una estrucura de matrices (SoA: Structure of Array) para almacenar datos en el dispositivo, parecido al anterior pero ejecutado de diferente manera.
 Aunque el tiempo que tomaron hacer ciertas funciones fue bastante similar, en conjunto este metodo si mejoro el tiempo de ejecucion por unos cuantos milisegundos.
+
+-[CUDA memcpy DtoH]: Hace copias de la memoria desde el device hacia el host - represento el 73.35% del tiempo de ejecucion con 12.215ms - llamado 2 veces.
+-[CUDA memcpy HtoD]: Hace copias de la memoria desde el host hacia el device - represento el 23.58% del tiempo de ejecucion con 3.9265ms - llamado 1 vez.
+-warmup2(InnerArray*, InnerArray*, int): Introduce los datos en sus correspondientes espacios en la matriz - represento el 1.54% del tiempo de ejecucion con 256.42us - llamado 1 vez.
+-testInnerArray(InnerArray*, InnerArray*, int): Coloca sus valores en el array - represento el 1.54% del tiempo de ejecucion con 256.03us - llamado 1 vez.
+
+-cudaMalloc: Asigna bytes de tamaño de memoria lineal en el dispositivo y devuelve en *devPtr un puntero a la memoria asignada - represento el 90.98% del tiempo de ejecucion con 584.89ms - llamado 2 veces.
+-cudaDeviceReset: Destruye y limpia todos los recursos asociados con el dispositivo actual en el proceso actual - represento el 5.47% del tiempo de ejecucion con 35.165ms - llamado 1 vez.
+-cudaMemcpy: Copia datos entre el host y el dispositivo - represento el 2.89% del tiempo de ejecucion con 18.564ms - llamado 3 veces.
+-cuDeviceGetPCIBusId: Devuelve la configuracion de la memoria compartida para el dispositivo actual - represento el 0.39% del tiempo de ejecucion con 2.4897ms - llamado 1 vez.
+-cudaFree: Libera memoria en el dispositivo - represento el 0.15% del tiempo de ejecucion con 981.80us - llamado 2 veces.
+-cudaDeviceSynchronize: Espera a que finaliza el dispositivo - represento el 0.11% del tiempo de ejecucion con 682.20us - llamado 2 veces.
+-cudaLaunchKernel: Inicia una funcion del dispositivo - represento el 0.01% del tiempo de ejecucion con 94.200us - llamado 2 veces.
+-cuDeviceGetAttribute: Regresa informacion del dispositivo - represento el 0.00% del tiempo de ejecucion con 16.500us - llamado 101 veces.
+-cudaSetDevice: Configura el dispositivo que se utilizara para las ejecuciones de la GPU - represento el 0.00% del tiempo de ejecucion con 5.9000us - llamado 1 vez.
+-cudaGetDeviceProperties: Devuelve informacion sobre el diuspositivo informatico - represento el 0.00% del tiempo de ejecucion con 5.1000us - llamado 1 vez.
+-cudaGetLastError: Devuelve el ultimo error de una llamada en tiempo de ejecucion - represento el 0.00% del tiempo de ejecucion con 4.7000us - llamado 1 vez.
+-cuDeviceGetCount: Devuelve el numero de dispositivos con capacidad informatica - represento el 0.00% del tiempo de ejecucion con 1.4000us - llamado 3 veces.
+-cuDeviceGetName: Devuelve una cadena de identificacion para el dispositivo - represento el 0.00% del tiempo de ejecucion con 1.2000us - llamado 1 vez.
+-cuDeviceGet: Devuelve un identificador a un dispositivo informatico - represento el 0.00% del tiempo de ejecucion con 1.1000us - llamado 2 veces.
+-cuDeviceTotalMem: Devuelve la cantidad total de memoria del dispositivo - represento el 0.00% del tiempo de ejecucion con 300ns - llamado 1 vez.
+-cuDeviceGetUuid: Devuelve un UUID para el dispositivo - represento el 0.00% del tiempo de ejecucion con 200ns - llamado 1 vez.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 ==1049== NVPROF is profiling process 1049, command: ./sumArrayZerocpy
 ==1049== Warning: Unified Memory Profiling is not supported on the current configuration because a pair of devices without peer-to-peer support is detected on this multi-GPU setup. When peer mappings are not available, system falls back to using zero-copy memory. It can cause kernels, which access unified memory, to run slower. More details can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-managed-memory
@@ -101,6 +144,13 @@ Aunque el tiempo que tomaron hacer ciertas funciones fue bastante similar, en co
 
 En este codigo se muestra el uso de la memoria zero-copy para quitar la necesidad de hacer una operacion memcpy entre el host y el dispositivo.
 Con esta implementacion las actividades del GPU quedan reducidas a microsegundos aunque sume arrays porque se elimino la necesidad de usar operaciones memcpy.
+
+-sumArraysZeroCopy(float*, float*, float*, int): Suma dos arrays y los introduce en otro array - represento el 33.33% del tiempo de ejecucion con 3.5200us - llamado 1 vez.
+-[CUDA memcpy DtoH]: Hace copias de la memoria desde el device hacia el host - represento el 22.73% del tiempo de ejecucion con 2.4000us - llamado 2 veces.
+-sumArrays(float*, float*, float*, int): Suma dos arrays y los introduce en otro array - represento el 22.12% del tiempo de ejecucion con 2.3360us - llamado 1 vez.
+-[CUDA memcpy HtoD]: Hace copias de la memoria desde el host hacia el device - represento el 21.82% del tiempo de ejecucion con 2.3040us - llamado 1 vez.
+
+La neta de aqui en adelante solo incluire las funciones que sean nuevas porque muchas se repiten y sus tiempos de ejecucion son muy similares juas juas.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ==1071== NVPROF is profiling process 1071, command: ./sumMatrixGPUManaged
 ==1071== Warning: Unified Memory Profiling is not supported on the current configuration because a pair of devices without peer-to-peer support is detected on this multi-GPU setup. When peer mappings are not available, system falls back to using zero-copy memory. It can cause kernels, which access unified memory, to run slower. More details can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-managed-memory
@@ -127,6 +177,10 @@ Con esta implementacion las actividades del GPU quedan reducidas a microsegundos
 En este codigo se demuestra el uso de la memoria CUDA para hacer una suma de matrices.
 En este ejemplo a diferencia de otros se observa que la GPU solo se encarga de realizar una funcion que es la suma de matrices.
 Otro detalle interesante es que en vez de usar el cudaMalloc como otros codigos, este usa cudaMallocManaged que asigna memoria que sera administrada automaticamente por el sistema de memoria unificada.
+
+-sumMatrixGPU(float*, float*, float*, int, int): Se realiza una suma de matrices bidimensional (grid 2D y block 2D) - represento el 100.00% del tiempo de ejecucion con 12.948ms - llamado 2 veces.
+
+-cudaMallocManaged: Asigna memoria que sera administrada automaticamente por el sistema de memoria unificada - represento el 91.39% del tiempo de ejecucion con 815.38ms - llamado 4 veces.
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 ==1089== NVPROF is profiling process 1089, command: ./sumMatrixGPUManual
 ==1089== Warning: Unified Memory Profiling is not supported on the current configuration because a pair of devices without peer-to-peer support is detected on this multi-GPU setup. When peer mappings are not available, system falls back to using zero-copy memory. It can cause kernels, which access unified memory, to run slower. More details can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-managed-memory
@@ -157,6 +211,9 @@ Otro detalle interesante es que en vez de usar el cudaMalloc como otros codigos,
 
 Este codigo demuestra el uso de la transferencia de memoria CUDA explicita para hacer una suma de matrices, este se parece al anterior pero se diferencia en que el anterior se centraba en eliminar todas las transferencias de memoria explicitas y en este se hace "a mano".
 Aqui la GPU tiene mas actividades por hacer como en codigos anteiores y se vuelve a usar el cudaMalloc en vez del cudaMallocManaged, el tiempo de ejecucion de este codigo no se diferencia mucho del anterior pero es un poco mas rapido.
+
+-sumMatrixGPU(float*, float*, float*, int, int): Se realiza una suma de matrices bidimensional (grid 2D y block 2D) - represento el 2.69% del tiempo de ejecucion con 1.1118ms - llamado 2 veces.
+-[CUDA memset]: Inicializa o establece la memoria del dispositivo en un valor - represento el 1.16% del tiempo de ejecucion con 479.42us - llamado 2 veces.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 ==1111== NVPROF is profiling process 1111, command: ./transpose
 ==1111== Warning: Unified Memory Profiling is not supported on the current configuration because a pair of devices without peer-to-peer support is detected on this multi-GPU setup. When peer mappings are not available, system falls back to using zero-copy memory. It can cause kernels, which access unified memory, to run slower. More details can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-managed-memory
@@ -185,6 +242,8 @@ Aqui la GPU tiene mas actividades por hacer como en codigos anteiores y se vuelv
 
 En este codigo se optimizan varios patrones de acceso a memoria aplicados a un nucleo de transposicion de matriz.
 Una vez las actividades de la GPU muestran un tiempo de ejecucion muy pequeño a comparacion de las API calls aunque en las actividades de la GPU se encuentren las "funciones principales" ya que en este codigo se centra en mejorar los patrones de acceso de memoria se usan mas que nada funciones de la misma API clalls.
+
+-copyRow(float*, float*, int, int): Accede y copia los datos en las filas del kernel - represento el 6.62% del tiempo de ejecucion con 151.49us - llamado 1 vez.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 ==1127== NVPROF is profiling process 1127, command: ./writeSegment
 ==1127== Warning: Unified Memory Profiling is not supported on the current configuration because a pair of devices without peer-to-peer support is detected on this multi-GPU setup. When peer mappings are not available, system falls back to using zero-copy memory. It can cause kernels, which access unified memory, to run slower. More details can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-managed-memory
@@ -216,6 +275,10 @@ Una vez las actividades de la GPU muestran un tiempo de ejecucion muy pequeño a
 
 En este codigo se demuestra el impacto de las escrituras desalineadas en el rendimiento al forzar que las escrituras desalineadas se produzcan en un flotante.
 En cuestiones de rendimiento y tiempo de ejecucion no se diferencia de la constante mostrada en otros codigos anteriores, este esta mas enfocado a mostrar el impacto de las escrituras desalineadas.
+
+-writeOffset(float*, float*, float*, int, int): Escribe los datos con cierta separacion unos de otros - represento el 1.55% del tiempo de ejecucion con 49.504us - llamado 1 vez.
+-writeOffsetUnroll2(float*, float*, float*, int, int): Escribe los datos con cierta separacion unos de otros de forma desenrrollada 2 veces - represento el 0.91% del tiempo de ejecucion con 29.120us - llamado 1 vez.
+-writeOffsetUnroll4(float*, float*, float*, int, int): Escribe los datos con cierta separacion unos de otros de forma desenrrollada 4 veces de forma incremental - represento el 0.72% del tiempo de ejecucion con 23.072us - llamado 1 vez.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ==935== NVPROF is profiling process 935, command: ./memTransfer
 ==935== Warning: Unified Memory Profiling is not supported on the current configuration because a pair of devices without peer-to-peer support is detected on this multi-GPU setup. When peer mappings are not available, system falls back to using zero-copy memory. It can cause kernels, which access unified memory, to run slower. More details can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-managed-memory
@@ -295,6 +358,8 @@ En este caso [CUDA memcpy HtoD] y [CUDA memcpy DtoH] tambien tienen un rendimien
 
 Este codigo demuestra el impacto de las lecturas desalineadas en el rendimiento al forzar que se produzcan lecturas desalineadas en un flotante.
 En las actividades de la GPU el rendimiento de las funciones no duraron ni milisegundos en realizarse, donde se genera mayor peso en el rendimiento es haciendo el cudaMalloc 3 veces llamado en este codigo.
+
+-readOffset(float*, float*, float*, int, int): Se suman dos valores con offset para introducir el resultado en un array - represento el 2.48% del tiempo de ejecucion con 49.408us - llamado 1 vez.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ==985== NVPROF is profiling process 985, command: ./readSegmentUnroll
 ==985== Warning: Unified Memory Profiling is not supported on the current configuration because a pair of devices without peer-to-peer support is detected on this multi-GPU setup. When peer mappings are not available, system falls back to using zero-copy memory. It can cause kernels, which access unified memory, to run slower. More details can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-managed-memory
@@ -328,4 +393,7 @@ En las actividades de la GPU el rendimiento de las funciones no duraron ni milis
 
 En este codigo se realiza el mismo objetivo que el codigo anterior pero en este tambien se incluyen los nucleos que reducen el impacto en el rendimiento de las lecturas desalineadas mediante el desenrollado.
 En las actividades de la GPU aunque se realizan varias funciones multiples veces estas no representan una gran carga para el rendimiento ya que duran algunos microsegundos, en cuanto a las API calls en lo que recae mas peso es en la ejecucion de cudaMalloc multiples veces.
+
+-readOffsetUnroll4(float*, float*, float*, int, int): Se suman dos valores con offset para introducir el resultado en un array consecutivamente de forma desenrrollada de 0 a 3 (4 veces) - represento el 1.56% del tiempo de ejecucion con 50.368us - llamado 1 vez.
+-readOffsetUnroll2(float*, float*, float*, int, int): Se suman dos valores con offset para introducir el resultado en un array consecutivamente de forma desenrrollada de 0 a 1 (2 veces) - represento el 49.632us del tiempo de ejecucion con 50.368us - llamado 1 vez.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
