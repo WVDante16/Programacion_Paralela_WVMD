@@ -1,0 +1,3 @@
+D:/UNIAT/7 Semestre/CUDA/MemoriaCompartidaCUDA/cmake-build-debug/CMakeFiles/MemoriaCompartidaCUDA.dir
+D:/UNIAT/7 Semestre/CUDA/MemoriaCompartidaCUDA/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/UNIAT/7 Semestre/CUDA/MemoriaCompartidaCUDA/cmake-build-debug/CMakeFiles/rebuild_cache.dir
